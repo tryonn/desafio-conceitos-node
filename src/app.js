@@ -16,8 +16,9 @@ app.get("/repositories", (request, response) => {
 
 app.post("/repositories", (request, response) => {
 
-  const { url, title, techs, likes } = request.body;
+  const { url, title, techs } = request.body;
 
+  const likes = 0;
   const repository = {
     id: uuid(),
     url,
@@ -34,13 +35,16 @@ app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
   const { url, title, techs } = request.body;
 
-  const reposIndex = repositories.findIndex(r => r.id = id);
+  const reposIndex = repositories.findIndex(r => r.id == id);
 
-  if (reposIndex < 0){
+  if (reposIndex <= 0){
     return response.status(400).json({ error: 'Not found ID ' })
   }
 
-  const repo =  { url, title, techs };
+  const { likes } = repositories.find(r => r.id = id); 
+
+  const repo =  { url, title, techs, likes, id };
+
 
   repositories[reposIndex] = repo;
 
@@ -48,24 +52,25 @@ app.put("/repositories/:id", (request, response) => {
 
 });
 
-app.delete("/repositories/:id", (req, res) => {
-  const { id } = req.params;
+app.delete("/repositories/:id", (request, response) => {
 
-  const repoIndex = repositories.findIndex( re => re.id = id);
+  const { id } = request.params;
 
-  if (repoIndex < 0){
-    return res.status(400).json({ error: 'Not found ID to delete' })
+  const repoIndex = repositories.findIndex( re => re.id == id);
+
+  if (repoIndex <= 0){
+    return response.status(400).json();
   }
   repositories.splice(repoIndex, 1);
 
-  return res.status(204).send();
+  return response.status(204).send();
 
 });
 
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
   
-  const repoIndex = repositories.findIndex(r => r.id = id);
+  const repoIndex = repositories.findIndex(r => r.id == id);
   if (repoIndex < 0){
     return response.status(400).json({ error: `Repositoy not found with ID: ${id}`});
   }
